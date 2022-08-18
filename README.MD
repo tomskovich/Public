@@ -8,11 +8,11 @@ More information will be posted on my [blog](https://tech-tom.com).
 ## INDEX
 
 - [PowerShell](https://github.com/tomskovich/Public#powershell)
-- [PowerShell\Modules](https://github.com/tomskovich/Public#powershellmodules)
-- [PowerShell\Functions](https://github.com/tomskovich/Public#powershellfunctions)
+    - [PowerShell\Modules](https://github.com/tomskovich/Public#powershellmodules)
+    - [PowerShell\Functions](https://github.com/tomskovich/Public#powershellfunctions)
 
 - [Python](https://github.com/tomskovich/Public#python)
-- [Python\Scripts](https://github.com/tomskovich/Public#pythonscripts)
+    - [Python\Scripts](https://github.com/tomskovich/Public#pythonscripts)
 
 ## LINKS
 
@@ -36,6 +36,7 @@ More information will be posted on my [blog](https://tech-tom.com).
 ## Scripts
 
 - [Placeholder]
+
 
 # PYTHON
 
