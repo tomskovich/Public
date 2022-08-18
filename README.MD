@@ -10,8 +10,9 @@ More information will be posted on my [blog](https://tech-tom.com).
 - [Blog](https://tech-tom.com)
 - [Report bug, issue, improvement request](https://github.com/tomskovich/Public/tree/main/PowerShell/issues/new/choose)
 
+# POWERSHELL
 
-### POWERSHELL\FUNCTIONS
+## POWERSHELL\FUNCTIONS
 
 - [New-Password](https://github.com/tomskovich/Public/tree/main/PowerShell/blob/main/Functions/New-Password.ps1) 
     - Generates one or more "random" human-readable passwords, with some options for complexity and language. See [blog post](https://tech-tom.com/posts/powershell-password-generator/) for more information.
