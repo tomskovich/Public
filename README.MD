@@ -1,15 +1,15 @@
 # PUBLIC 
 
 This is my repo for useful PowerShell/Python stuff. 
-Mainly used/created for daily SysAdmin tasks while working at an MSP, or for private use.
+Mainly used/created for daily SysAdmin tasks, but some private projects will be posted as well.
 
 More information will be posted on my [blog](https://tech-tom.com).
 
 ## INDEX
 
 - [PowerShell](https://github.com/tomskovich/Public#powershell)
-    - [PowerShell\Modules](https://github.com/tomskovich/Public#powershellmodules)
-    - [PowerShell\Functions](https://github.com/tomskovich/Public#powershellfunctions)
+    - [Functions](https://github.com/tomskovich/Public#powershellfunctions)
+    - [Modules](https://github.com/tomskovich/Public#powershellmodules)
 
 - [Python](https://github.com/tomskovich/Public#python)
     - [Python\Scripts](https://github.com/tomskovich/Public#pythonscripts)
@@ -28,10 +28,15 @@ More information will be posted on my [blog](https://tech-tom.com).
 
 ## Modules
 
+All of these modules are a work in progress.
+
 - [OpenProvider](https://github.com/tomskovich/Public/tree/main/PowerShell/Modules/OpenProvider)
     - PowerShell wrapper around the OpenProvider API
     - Also includes a function to duplicate DNS zones from OpenProvider to Azure. (Sync-OPDnsToAzure)
         - I wrote this because we were having recurring issues with OpenProvider that forced us to move several DNS zones to Azure.
+- [SupportCenter](https://github.com/tomskovich/Public/tree/main/PowerShell/Modules/SupportCenter)
+    - PowerShell wrapper around ManageEngine SupportCenter API. (fml)
+    - Mainly used for personal convenience, and for usage in dashboards.
 
 ## Scripts
 
