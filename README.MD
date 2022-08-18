@@ -1,7 +1,8 @@
-# PowerShell 
+# Public 
 
-This is my repo for useful PowerShell scripts/functions/modules. 
-Mainly used for daily SysAdmin tasks while working at an MSP.
+This is my repo for useful PowerShell/Python scripts/functions/modules. 
+Mainly used for daily SysAdmin tasks while working at an MSP, or private projects.
+
 More information will be posted on my [blog](https://tech-tom.com).
 
 ## LINKS
@@ -10,11 +11,12 @@ More information will be posted on my [blog](https://tech-tom.com).
 - [Report bug, issue, improvement request](https://github.com/tomskovich/Public/tree/main/PowerShell/issues/new/choose)
 
 
-## FUNCTIONS
+### POWERSHELL\FUNCTIONS
 
 Collection of random functions for further use in scripts/modules, or for standalone use.
 
-- [New-Password](https://github.com/tomskovich/Public/tree/main/PowerShell/blob/main/Functions/New-Password.ps1)
-    - Generates one or more "random" human-readable passwords, with some options for complexity and language (by )
+- [New-Password](https://github.com/tomskovich/Public/tree/main/PowerShell/blob/main/Functions/New-Password.ps1) 
+    - Generates one or more "random" human-readable passwords, with some options for complexity and language
+    - [Blog post](https://tech-tom.com/posts/powershell-password-generator/)
 
 
