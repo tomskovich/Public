@@ -29,6 +29,8 @@ function Sync-OPDnsToAzure {
         [ValidateNotNullorEmpty()]
         [String] $ResourceGroupName = 'DNS',
 
+        [Switch] $Search,
+
         [Switch] $Migrate
     )
 
@@ -86,6 +88,24 @@ function Sync-OPDnsToAzure {
 
     process {
         foreach ($Domain in $Domains) {
+            # Get domain info from OpenProvider; prompt user for confirmation
+            Write-host "Getting OpenProvider NameServer group for domain: $($Domain)" -ForegroundColor 'Yellow'
+            try {
+                if ($Search) {
+                    $OPDomainInfo = Get-OPDomain -Domain $Domain -Search
+                }
+                else {
+                    $OPDomainInfo = Get-OPDomain -Domain $Domain
+                }
+                Write-Host '=== Received the following domain information from OpenProvider. Please verify if this domain is correct.' -ForegroundColor 'Cyan'
+                $OPDomainInfo
+                Pause
+            }
+            catch {
+                Write-Error $_
+                throw 'Error getting NameServer group from OpenProvider. Try again or check OpenProvider directly.'
+            }
+
             # Get DNS zone from OpenProvider
             Write-host "Getting OpenProvider DNS zone for domain: $($Domain)" -ForegroundColor 'Yellow'
             try {
@@ -94,19 +114,6 @@ function Sync-OPDnsToAzure {
             catch {
                 Write-Error $_
                 throw 'Error getting DNS zone from OpenProvider. Try again or check OpenProvider directly.'
-            }
-
-            # Get domain info from OpenProvider; prompt user for confirmation
-            Write-host "Getting OpenProvider NameServer group for domain: $($Domain)" -ForegroundColor 'Yellow'
-            try {
-                $OPDomainInfo = Get-OPDomain -Domain $Domain
-                Write-Host '=== Received the following domain information from OpenProvider. Please verify if this domain is correct.' -ForegroundColor 'Cyan'
-                $OPDomainInfo
-                Pause
-            }
-            catch {
-                Write-Error $_
-                throw 'Error getting NameServer group from OpenProvider. Try again or check OpenProvider directly.'
             }
 
             # Get DNS zone from Azure and create if needed

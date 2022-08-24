@@ -7,12 +7,15 @@ function Get-OPDomain {
     param(
         [Parameter(Mandatory = $true, ValuefromPipeline = $true)]
         [Alias('Name', 'DomainName')]
-        [String] $Domain
+        [String] $Domain,
+
+        [ValidateNotNullOrEmpty()]
+        [String] $URL = 'https://api.openprovider.eu/v1beta/domains',
+
+        [Switch] $Search
     )
 
     begin {
-        $URL = 'https://api.openprovider.eu/v1beta/domains'
-
         # Use TLS 1.2 for older PowerShell versions
         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
@@ -21,19 +24,31 @@ function Get-OPDomain {
     }
 
     process {
-        # Remove domain extensions (required)
-        $Domain = ($Domain) -replace '\..*$', ''
+        if ($Search) {
+            # Format domain name so "www" AND extension is removed
+            $Domain = Format-DomainName -Domain $Domain -RemoveExtension
 
-        $Body = @{
-            domain_name_pattern = "$Domain"
-            limit               = 1
-            status              = 'ACT'
+            $Body = @{
+                domain_name_pattern = $Domain
+                limit               = 5
+                status              = 'ACT'
+            }
         }
-            
+        else {
+            # Format domain name so "www" is removed, also verifies if TLD/extension is valid
+            $Domain = Format-DomainName -Domain $Domain
+
+            $Body = @{
+                full_name           = $Domain
+                limit               = 1
+                status              = 'ACT'
+            }
+        }
+
         $Headers = @{
             Authorization = "Bearer $Token"
         }
-            
+
         $Params = @{
             Method      = 'GET'
             Uri         = $URL
@@ -59,6 +74,5 @@ function Get-OPDomain {
         else {
             throw "ERROR: Could not find domain: $Domain."
         }
-
     } # end process
 }
