@@ -11,10 +11,8 @@ More information will be posted on my [blog](https://tech-tom.com).
     - [Scripts](https://github.com/tomskovich/Public#powershellscripts)
     - [Functions](https://github.com/tomskovich/Public#powershellfunctions)
         - [New-Password](https://github.com/tomskovich/Public/blob/main/PowerShell/Functions/New-Password.ps1)
-            - This PowerShell function generates one or more "random" human-readable passwords, with some options for complexity and language.
     - [Modules](https://github.com/tomskovich/Public/tree/main/PowerShell/Modules)
         - [OpenProvider](https://github.com/tomskovich/Public/tree/main/PowerShell/Modules/OpenProvider)
-            - Powershell Wrapper for the [OpenProvider](https://openprovider.com) API.
 
 - [Python](https://github.com/tomskovich/Public#python)
     - [Scripts](https://github.com/tomskovich/Public#pythonscripts)
