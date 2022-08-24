@@ -7,20 +7,17 @@ At my current job, we use [OpenProvider](https://openprovider.com) as our main d
 I initially wrote this module for personal convenience, but I've also integrated some of the functions in our [PowerShell Universal](https://ironmansoftware.com/powershell-universal) dashboards.
 
 
-# Functions
-
-## Functions\Private
+# Functions\Private
 
 - [Get-OPBearerToken](https://github.com/tomskovich/Public/blob/main/PowerShell/Modules/OpenProvider/Private/Get-OPBearerToken.ps1) 
     - Retrieves/verifies Bearer token for OpenProvider API authentication.
 - [Convert-SecureToPlain](https://github.com/tomskovich/Public/blob/main/PowerShell/Modules/OpenProvider/Private/Convert-SecureToPlain.ps1)
-    - Converts SecureString to plain. This is to support older PowerShell (< 7)) versions.
     - In PS 7, you can use "ConvertFrom-SecureString and -AsPlainText"
 - [Format-DomainName](https://github.com/tomskovich/Public/blob/main/PowerShell/Modules/OpenProvider/Private/Format-DomainName.ps1)
     - Verifies if given domain name is valid, then extracts the domain name.
     - OPTIONAL: Removes domain extension for usage in search queries with multiple results.
 
-## Functions\Public
+# Functions\Public
 
 - [Get-OPDomain](https://github.com/tomskovich/Public/blob/main/PowerShell/Modules/OpenProvider/Public/Get-OPDomain.ps1) 
     - Searches/gets a domain through the OpenProvider API. Returns Domain ID, Owner etc.
