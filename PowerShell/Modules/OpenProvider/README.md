@@ -20,17 +20,17 @@ I initially wrote this module for personal convenience, but I've also integrated
 # Functions\Public
 
 - [Get-OPDomain](https://github.com/tomskovich/Public/blob/main/PowerShell/Modules/OpenProvider/Public/Get-OPDomain.ps1) 
-    - Searches/gets a domain through the OpenProvider API. Returns Domain ID, Owner etc.
+    - Searches/gets domain information. Returns Domain ID, Owner etc.
 - [Get-OPTransferToken](https://github.com/tomskovich/Public/blob/main/PowerShell/Modules/OpenProvider/Public/Get-OPTransferToken.ps1) 
-    - Retrieves domain transfer key(s) through the OpenProvider API
+    - Retrieves domain transfer key(s).
 - [Get-OPDnsZone](https://github.com/tomskovich/Public/blob/main/PowerShell/Modules/OpenProvider/Public/Get-OPDnsZone.ps1)
-    - Retrieves domain DNS zone(s) through the OpenProvider API
+    - Retrieves domain DNS zone(s).
 - [Get-OPNameServerGroups](https://github.com/tomskovich/Public/blob/main/PowerShell/Modules/OpenProvider/Public/Get-OPNameServerGroups.ps1)
     - Retrieves NameServer groups from your OpenProvider account. Search query optional.
 - [Get-OPSslCertificate](https://github.com/tomskovich/Public/blob/main/PowerShell/Modules/OpenProvider/Public/Get-OPSslCertificate.ps1)
-    - Retrieves SSL Certificate information through the OpenProvider API.
+    - Retrieves SSL Certificate information.
 - [Update-OPSslCertificate](https://github.com/tomskovich/Public/blob/main/PowerShell/Modules/OpenProvider/Public/Update-OPSslCertificate.ps1)
-    - Starts SSL Certificate renewal process through the OpenProvider API
+    - Starts SSL Certificate renewal process.
 - [Set-OPNameServerGroup](https://github.com/tomskovich/Public/blob/main/PowerShell/Modules/OpenProvider/Public/Set-OPNameServerGroup.ps1)
     - Modifies NameServer group for a specific domain.
 - [Sync-OPDnsToAzure](https://github.com/tomskovich/Public/blob/main/PowerShell/Modules/OpenProvider/Public/Sync-OPDnsToAzure.ps1)
