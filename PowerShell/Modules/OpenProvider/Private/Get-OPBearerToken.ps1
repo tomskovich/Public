@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-    Retrieves Bearer token for OpenProvider API authentication
+    Retrieves/verifies Bearer token for OpenProvider API authentication
 
     .LINK
     https://support.openprovider.eu/hc/en-us/articles/360025683173-Getting-started-with-Openprovider-API

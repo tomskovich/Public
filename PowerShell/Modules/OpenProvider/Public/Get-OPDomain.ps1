@@ -1,10 +1,24 @@
 <#
-    TO DO: Get domain by exact match instead of pattern
-    LINK: https://docs.openprovider.com/doc/all#operation/ListDomains
+    .SYNOPSIS
+    Searches/gets a domain through the OpenProvider API. Returns Domain ID, Owner etc.
+
+    .LINK
+    https://docs.openprovider.com/doc/all#operation/ListDomains
+
+    .EXAMPLE
+    Get-OPDomain -Domain 'tech-tom.com'
+
+    .EXAMPLE
+    Get-OPDomain -Domain -Search 'tech-tom'
+
+    .NOTES
+    Author:   Tom de Leeuw
+    Website:  https://tech-tom.com / https://ucsystems.nl
 #>
 function Get-OPDomain {
     [CmdletBinding()]
     param(
+        # Domain name to find/get
         [Parameter(Mandatory = $true, ValuefromPipeline = $true)]
         [Alias('Name', 'DomainName')]
         [String] $Domain,
@@ -12,6 +26,7 @@ function Get-OPDomain {
         [ValidateNotNullOrEmpty()]
         [String] $URL = 'https://api.openprovider.eu/v1beta/domains',
 
+        # [OPTIONAL] Searches with wildcard options for multiple results (if found). Removes domain extension if passed.
         [Switch] $Search
     )
 
@@ -21,11 +36,11 @@ function Get-OPDomain {
 
         # Token for OpenProvider API Authorization - Requires Get-OPBearerToken function.
         [String] $Token = (Get-OPBearerToken).token
-    }
+    } # end Begin
 
     process {
         if ($Search) {
-            # Format domain name so "www" AND extension is removed
+            # Format domain name so "www" AND extension is removed. Also verifies if domain is valid.
             $Domain = Format-DomainName -Domain $Domain -RemoveExtension
 
             $Body = @{
@@ -35,13 +50,13 @@ function Get-OPDomain {
             }
         }
         else {
-            # Format domain name so "www" is removed, also verifies if TLD/extension is valid
+            # Format domain name so "www" is removed. Also verifies if domain is valid.
             $Domain = Format-DomainName -Domain $Domain
 
             $Body = @{
-                full_name           = $Domain
-                limit               = 1
-                status              = 'ACT'
+                full_name = $Domain
+                limit     = 1
+                status    = 'ACT'
             }
         }
 
@@ -74,5 +89,5 @@ function Get-OPDomain {
         else {
             throw "ERROR: Could not find domain: $Domain."
         }
-    } # end process
+    } # end Process
 }

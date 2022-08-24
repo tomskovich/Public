@@ -11,7 +11,8 @@ More information will be posted on my [blog](https://tech-tom.com).
     - [Scripts](https://github.com/tomskovich/Public#powershellscripts)
     - [Functions](https://github.com/tomskovich/Public#powershellfunctions)
         - [Placeholder]
-    - [Modules](https://github.com/tomskovich/Public#powershellmodules)
+    - [Modules](https://github.com/tomskovich/Public/tree/main/PowerShell/Modules)
+        - [OpenProvider](https://github.com/tomskovich/Public/tree/main/PowerShell/Modules/OpenProvider)
 
 - [Python](https://github.com/tomskovich/Public#python)
     - [Scripts](https://github.com/tomskovich/Public#pythonscripts)

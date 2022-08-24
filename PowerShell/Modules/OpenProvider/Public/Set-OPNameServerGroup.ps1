@@ -1,3 +1,14 @@
+<#
+    .SYNOPSIS
+    Modifies NameServer group for a specific domain.
+
+    .LINK
+    https://docs.openprovider.com/doc/all#operation/UpdateGroup
+
+    .NOTES
+    Author:   Tom de Leeuw
+    Website:  https://ucsystems.nl / https://tech-tom.com
+#>
 function Set-OPNameServerGroup {
     [CmdletBinding()]
     param(

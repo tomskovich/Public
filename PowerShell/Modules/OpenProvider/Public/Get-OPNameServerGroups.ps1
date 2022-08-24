@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-    Gets all NameServer groups from your OpenProvider account.
+    Retrieves NameServer groups from your OpenProvider account. Search query optional.
 
     .LINK
     https://docs.openprovider.com/doc/all#tag/NsGroupService
