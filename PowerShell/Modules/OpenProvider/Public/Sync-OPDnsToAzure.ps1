@@ -26,11 +26,9 @@ function Sync-OPDnsToAzure {
         [Alias('Domain', 'Name', 'DomainName')]
         [String[]] $Domains,
 
-        [Parameter()]
         [ValidateNotNullorEmpty()]
         [String] $ResourceGroupName = 'DNS',
 
-        [Parameter()]
         [Switch] $Migrate
     )
 
@@ -84,7 +82,7 @@ function Sync-OPDnsToAzure {
         else {
             Write-Host "Account has permissions for Resource Group $ResourceGroupName. Continuing..." -ForegroundColor 'Green'
         }
-    } # end Begin block
+    } # end Begin
 
     process {
         foreach ($Domain in $Domains) {
@@ -450,7 +448,7 @@ function Sync-OPDnsToAzure {
                         Set-OPNameServerGroup -Domain $Domain -GroupName $SelectedOpGroup.Name
                     }
                     1 { 
-                        "Ok, Ciao bella!"
+                        "Ok, BYE!!"
                         exit 
                     }
                 }
@@ -473,12 +471,10 @@ function Sync-OPDnsToAzure {
                     }
                 }
             }
-        } # end Foreach $Domain in $Domains
-
-    } # end Process block
+        }
+    } # end Process
 
     end {
         # TO DO: Generate better output report for every domain (PSCustomObject)
     }
-
 }

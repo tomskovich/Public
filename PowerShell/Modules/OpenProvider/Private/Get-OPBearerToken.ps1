@@ -6,23 +6,17 @@
     https://support.openprovider.eu/hc/en-us/articles/360025683173-Getting-started-with-Openprovider-API
 
     .EXAMPLE
-    Get-OPDnsZone -Domain 'ucsystems.nl'
-
-    .EXAMPLE
-    Get-OPDnsZone -Domains 'ucsystems.nl', 'google.com'
-
-    .EXAMPLE
-    'ucsystems.nl', 'google.com', 'contoso.com' | Get-OPDnsZone
+    Get-OPBearerToken
 
     .NOTES
     Author:   Tom de Leeuw
-    Website:  https://ucsystems.nl
+    Website:  https://tech-tom.com / https://ucsystems.nl
 #>
 function Get-OPBearerToken {
     param (
         # API URL 
-        [Parameter()]
         [Alias('URI')]
+        [ValidateNotNullOrEmpty()]
         [String] $URL = 'https://api.openprovider.eu/v1beta/auth/login'
     )
 
@@ -35,9 +29,8 @@ function Get-OPBearerToken {
     }
 
     process {
-        if ( ($null -eq $Token) -or ($Token.CreationTime -gt $(Get-Date).AddHours(-36)) ) {
+        if ( ($null -eq $Token) -or ($Token.CreationTime -gt $(Get-Date).AddHours(-24)) ) {
             Write-Host 'API Token is expired or does not exist. Requesting new token.' -ForegroundColor 'Yellow'
-            Write-Host 'Please enter your OpenProvider credentials.' -ForegroundColor 'Yellow'
 
             $Credential = Get-Credential -Message 'Enter username/password for OpenProvider API authentication:'
             

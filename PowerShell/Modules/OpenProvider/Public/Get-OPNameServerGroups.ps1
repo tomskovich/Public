@@ -1,9 +1,27 @@
+<#
+    .SYNOPSIS
+    Gets all NameServer groups from your OpenProvider account.
+
+    .LINK
+    https://docs.openprovider.com/doc/all#tag/NsGroupService
+
+    .EXAMPLE
+    Get-OPNameServerGroups
+
+    .NOTES
+    Author:   Tom de Leeuw
+    Website:  https://tech-tom.com / https://ucsystems.nl
+#>
 function Get-OPNameServerGroups {
     [CmdletBinding()]
     [Alias("Get-OPNameServerGroup")]
     param (
-        [Parameter()]
-        [String] $Name
+        # Search query (optional for if you have a lot of NS groups)
+        [Alias('Filter')]
+        [String] $Name,
+
+        [ValidateNotNullOrEmpty()]
+        [String] $URL = 'https://api.openprovider.eu/v1beta/dns/nameservers/groups'
     )
 
     begin {
@@ -11,16 +29,19 @@ function Get-OPNameServerGroups {
         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
         # Token for OpenProvider API Authorization - Requires Get-OPBearerToken function.
-        [Parameter()]
         [String] $Token = (Get-OPBearerToken).token
     }
 
     process {
-
-        $URL = 'https://api.openprovider.eu/v1beta/dns/nameservers/groups'
-        
-        $Body = @{
-            ns_name_pattern = '*'
+        if ($Name) {
+            $Body = @{
+                ns_name_pattern = "*$Name*"
+            }
+        }
+        else {
+            $Body = @{
+                ns_name_pattern = '*'
+            }
         }
         
         $Headers = @{
@@ -51,8 +72,5 @@ function Get-OPNameServerGroups {
         }
         
         return $Result
-
-    } # end process
-
-
+    } # end Process
 }
