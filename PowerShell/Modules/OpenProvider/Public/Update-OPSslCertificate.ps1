@@ -19,8 +19,11 @@ function Update-OPSslCertificate {
     [Alias("Update-OPSslCert")]
     [CmdletBinding()]
     param (
+        # Domain name of SSL certificate
+        [Alias('Name', 'DomainName')]
+        [String] $Domain,
+
         # OpenProvider Order ID of SSL certificate 
-        [Parameter(Mandatory = $true, ValuefromPipeline = $true)]
         [Alias('OrderID')]
         [Int] $ID,
 
@@ -40,6 +43,10 @@ function Update-OPSslCertificate {
     }
 
     process {
+        if ($Domain) {
+            $ID = Get-OPSslCertificate -Domain $Domain | Select-Object -ExpandProperty ID
+        }
+
         $URL = "$($URL)/$($ID)/renew"
 
         $Body = @{

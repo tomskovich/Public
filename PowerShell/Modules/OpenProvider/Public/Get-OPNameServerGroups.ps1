@@ -14,7 +14,7 @@
 #>
 function Get-OPNameServerGroups {
     [CmdletBinding()]
-    [Alias("Get-OPNameServerGroup")]
+    [Alias("Get-OPNameServerGroup", "Get-OPNsGroup", "Get-OPNsGroups")]
     param (
         # Search query (optional for if you have a lot of NS groups)
         [Alias('Filter')]

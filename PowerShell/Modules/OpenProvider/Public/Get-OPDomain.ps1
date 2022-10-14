@@ -77,11 +77,13 @@ function Get-OPDomain {
         if ($Response) {
             $Result = foreach ($item in $Response) {
                 [PSCustomObject]@{
-                    Domain      = $item.domain.name + '.' + $item.domain.extension
-                    ID          = $item.id
-                    NameServers = $item.name_servers.name
-                    NSGroup     = $item.ns_group
-                    Owner       = $item.owner_company_name
+                    Domain        = $item.domain.name + '.' + $item.domain.extension
+                    ID            = $item.id
+                    NameServers   = $item.name_servers.name
+                    NSGroup       = $item.ns_group
+                    Owner         = $item.owner_company_name
+                    DNSSec        = $item.dnssec
+                    DNSSecEnabled = $item.is_dnssec_enabled
                 }
             }
             return $Result

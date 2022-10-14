@@ -3,21 +3,22 @@
     Modifies NameServer group for a specific domain.
 
     .LINK
-    https://docs.openprovider.com/doc/all#operation/UpdateGroup
+    https://docs.openprovider.com/doc/all#operation/UpdateDomain
 
     .NOTES
     Author:   Tom de Leeuw
     Website:  https://ucsystems.nl / https://tech-tom.com
 #>
-function Set-OPNameServerGroup {
+function Update-OPDomain {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true, ValuefromPipeline = $true)]
         [Alias('Name', 'DomainName')]
         [String] $Domain,
 
-        [Parameter()]
-        [String] $GroupName
+        [Parameter(Mandatory = $false, ValuefromPipeline = $true)]
+        [ValidateNotNullOrEmpty()]
+        [Switch] $DisableDNSSec
     )
 
     begin {
@@ -30,23 +31,27 @@ function Set-OPNameServerGroup {
 
     process {
         # Get current Domain information from OpenProvider
-        $DomainData     = Get-OPDomain -Domain $Domain
-        $DomainID       = $DomainData | Select-Object -ExpandProperty ID
-        $CurrentNsGroup = $DomainData | Select-Object -ExpandProperty NSGroup
-        $URL            = 'https://api.openprovider.eu/v1beta/domains/' + $DomainID
+        $DomainData = Get-OPDomain -Domain $Domain
 
-        if ($CurrentNsGroup -match $GroupName) {
-            return Write-Host "NS Groups are the same already. No changes required." -ForegroundColor 'Green'
+        if ($DisableDNSSec) {
+            $DNSSecEnabled = $DomainData | Select-Object -ExpandProperty DNSSecEnabled
+            if ($DNSSecEnabled -eq $false) {
+                return Write-Host "DNSSec is already disabled for $Domain. No changes required." -ForegroundColor 'Green'
+            }
         }
 
+        $DomainID = $DomainData | Select-Object -ExpandProperty ID
+
+        $URL = 'https://api.openprovider.eu/v1beta/domains/' + $DomainID
+
         $Body = @{
-            ns_group = $GroupName
+            is_dnssec_enabled = $false
         } | ConvertTo-Json
 
         $Headers = @{
             Authorization = "Bearer $Token"
         }
-            
+
         $Params = @{
             Method      = 'PUT'
             Uri         = $URL
@@ -56,14 +61,15 @@ function Set-OPNameServerGroup {
         }
 
         $Response = (Invoke-RestMethod @Params)
-
         if ($Response.code -eq '0') {
-            Write-Host 'Changed NameServer group successfully!' -ForegroundColor 'Green'
+            Write-Host "Disabled DNSSec successfully for domain $($Domain)" -ForegroundColor 'Green'
+        }
+        elseif ($Response.code -eq '349') {
+            Write-Host "Cannot disable DNSSEC for $Domain. Please do it manually through the web interface."
         }
         else {
             Write-Error $Response.Warnings
             throw "OpenProvider returned error code: $($Response.code) with above warnings."
         }
-
     } # end process
 }

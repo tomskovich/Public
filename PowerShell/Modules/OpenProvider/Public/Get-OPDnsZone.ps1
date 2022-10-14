@@ -42,6 +42,7 @@ function Get-OPDnsZone {
             
             $Body = @{
                 with_records = 'true'
+                with_dnskey  = 'true'
             }
             
             $Headers = @{
@@ -57,7 +58,7 @@ function Get-OPDnsZone {
             }
             
             try {
-                $Response = (Invoke-RestMethod @Params).data.records
+                $Response = (Invoke-RestMethod @Params).data
             }
             catch {
                 Write-Error $_
@@ -65,14 +66,22 @@ function Get-OPDnsZone {
             }
             
             if ($Response) {
-                $Response | ForEach-Object {
+                ($Response).records | ForEach-Object {
                     [PSCustomObject]@{
                         Domain     = $Domain
-                        Name       = if ($Domain -eq $_.name) { '@' } else { $_.name }
+                        Name       = if ($Domain -eq $_.name) { '@' } 
+                                    elseif ($_.name -like "*.$Domain") { $_.name -replace "\.$Domain", "" } 
+                                    else { $_.name }
                         RecordType = $_.type
                         Priority   = $_.prio
                         Value      = $_.value
                         Ttl        = $_.ttl
+                    }
+                }
+                # DNSSec
+                $Response | ForEach-Object {
+                    [PSCustomObject]@{
+                        DNSKey     = $_.dnskey
                     }
                 }
             }
@@ -82,7 +91,6 @@ function Get-OPDnsZone {
         } # end foreach
 
         return $Data
-
     } # end process
-
 }
+

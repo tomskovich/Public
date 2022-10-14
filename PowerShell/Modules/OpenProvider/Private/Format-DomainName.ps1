@@ -27,12 +27,18 @@ function Format-DomainName {
 
     if ( ! $Extensions ) {
         # Get list of valid TLD's
-        $ExtensionsRaw = Invoke-RestMethod -Uri "https://publicsuffix.org/list/public_suffix_list.dat"
+        $ExtensionsRaw = Invoke-RestMethod -Uri "https://raw.githubusercontent.com/publicsuffix/list/master/public_suffix_list.dat"
         # Remove comments and unnecessary lines, and save to script variable for faster future runs
-        $script:Extensions = New-Object System.Collections.ArrayList ($ExtensionsRaw -split "`n" | Where-Object { $_ -notlike '//*' -and $_ })
+        $Extensions = $ExtensionsRaw -split "`n" | Where-Object { $_ -notlike '//*' -and $_ }
+        $script:ExtensionsList  = New-Object System.Collections.ArrayList
+        [void] $script:ExtensionsList.Add($Extensions)
     }
 
     $Valid = $false
+    
+    # Remove 'www' from domain
+    $Prefix = 'www'
+    $Domain = $Domain -replace "$Prefix."
 
     # Skip TLD verification if -RemoveExtension is passed
     if ($RemoveExtension) {
@@ -49,11 +55,11 @@ function Format-DomainName {
 
     if ($Valid) {
         if ($RemoveExtension) {
-            $Domain = ($Domain -replace "\.$Extension" -split '\.')[-1]
+            $Domain = $Domain -replace "$Extension"
             return $Domain
         }
         else {
-            $Domain = ($Domain -replace "\.$Extension" -split '\.')[-1] + ".$Extension"
+            #$Domain = ($Domain -replace "\.$Extension" -split '\.')[-1] + ".$Extension"
             return $Domain
         }
     }
