@@ -24,16 +24,15 @@ function Get-OPDnsZone {
         # Domain name(s) to get transfer token for
         [Parameter(Mandatory = $true, ValuefromPipeline = $true)]
         [Alias('Domain', 'Name', 'DomainName')]
-        [String[]] $Domains,
-
-        # Token for OpenProvider API Authorization - Requires Get-OPBearerToken function.
-        [Parameter()]
-        [String] $Token = (Get-OPBearerToken).token
+        [String[]] $Domains
     )
 
     begin {
         # Use TLS 1.2 for older PowerShell versions
         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+        # Token for OpenProvider API Authorization - Requires Get-OPBearerToken function.
+        [String] $Token = (Get-OPBearerToken).token
     }
 
     process {
@@ -58,7 +57,8 @@ function Get-OPDnsZone {
             }
             
             try {
-                $Response = (Invoke-RestMethod @Params).data
+                $Request  = Invoke-RestMethod @Params -Verbose:$false
+                $Response = ($Request).data
             }
             catch {
                 Write-Error $_

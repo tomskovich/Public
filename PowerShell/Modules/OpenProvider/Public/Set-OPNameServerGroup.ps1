@@ -36,7 +36,7 @@ function Set-OPNameServerGroup {
         $URL            = 'https://api.openprovider.eu/v1beta/domains/' + $DomainID
 
         if ($CurrentNsGroup -match $GroupName) {
-            return Write-Host "NS Groups are the same already. No changes required." -ForegroundColor 'Green'
+            return Write-Information "NS Groups are the same already. No changes required."
         }
 
         $Body = @{
@@ -55,10 +55,11 @@ function Set-OPNameServerGroup {
             ContentType = 'application/json'
         }
 
-        $Response = (Invoke-RestMethod @Params)
+        $Request  = Invoke-RestMethod @Params -Verbose:$false
+        $Response = $Request
 
         if ($Response.code -eq '0') {
-            Write-Host 'Changed NameServer group successfully!' -ForegroundColor 'Green'
+            Write-Output 'Changed NameServer group successfully!'
         }
         else {
             Write-Error $Response.Warnings

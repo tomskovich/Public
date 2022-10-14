@@ -25,13 +25,12 @@ function Format-DomainName {
     )
     
 
-    if ( ! $Extensions ) {
+    if ( ! $script:Extensions) {
         # Get list of valid TLD's
-        $ExtensionsRaw = Invoke-RestMethod -Uri "https://raw.githubusercontent.com/publicsuffix/list/master/public_suffix_list.dat"
+        $ExtensionsURL = "https://raw.githubusercontent.com/publicsuffix/list/master/public_suffix_list.dat"
+        $ExtensionsRaw = Invoke-RestMethod -Uri $ExtensionsURL -Verbose:$false
         # Remove comments and unnecessary lines, and save to script variable for faster future runs
-        $Extensions = $ExtensionsRaw -split "`n" | Where-Object { $_ -notlike '//*' -and $_ }
-        $script:ExtensionsList  = New-Object System.Collections.ArrayList
-        [void] $script:ExtensionsList.Add($Extensions)
+        $script:Extensions = $ExtensionsRaw -split "`n" | Where-Object { $_ -notlike '//*' -and $_ }
     }
 
     $Valid = $false
@@ -59,7 +58,6 @@ function Format-DomainName {
             return $Domain
         }
         else {
-            #$Domain = ($Domain -replace "\.$Extension" -split '\.')[-1] + ".$Extension"
             return $Domain
         }
     }

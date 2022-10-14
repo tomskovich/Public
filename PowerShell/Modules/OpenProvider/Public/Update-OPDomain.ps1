@@ -36,7 +36,7 @@ function Update-OPDomain {
         if ($DisableDNSSec) {
             $DNSSecEnabled = $DomainData | Select-Object -ExpandProperty DNSSecEnabled
             if ($DNSSecEnabled -eq $false) {
-                return Write-Host "DNSSec is already disabled for $Domain. No changes required." -ForegroundColor 'Green'
+                return Write-Verbose "DNSSec is already disabled for $Domain. No changes required."
             }
         }
 
@@ -62,10 +62,10 @@ function Update-OPDomain {
 
         $Response = (Invoke-RestMethod @Params)
         if ($Response.code -eq '0') {
-            Write-Host "Disabled DNSSec successfully for domain $($Domain)" -ForegroundColor 'Green'
+            Write-Output "Disabled DNSSec successfully for domain $($Domain)"
         }
         elseif ($Response.code -eq '349') {
-            Write-Host "Cannot disable DNSSEC for $Domain. Please do it manually through the web interface."
+            Write-Warning "Cannot disable DNSSEC for $Domain. Please do it manually through the web interface."
         }
         else {
             Write-Error $Response.Warnings

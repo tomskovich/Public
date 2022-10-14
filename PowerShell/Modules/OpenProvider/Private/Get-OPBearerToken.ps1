@@ -30,7 +30,7 @@ function Get-OPBearerToken {
 
     process {
         if ( ($null -eq $Token) -or ($Token.CreationTime -gt $(Get-Date).AddHours(-24)) ) {
-            Write-Host 'API Token is expired or does not exist. Requesting new token.' -ForegroundColor 'Yellow'
+            Write-Output 'API Token is expired or does not exist. Requesting new token.'
 
             $Credential = Get-Credential -Message 'Enter username/password for OpenProvider API authentication:'
             
@@ -55,7 +55,8 @@ function Get-OPBearerToken {
                 ContentType = 'application/json'
             }
         
-            $Response = (Invoke-RestMethod @Params).data
+            $Request  = Invoke-RestMethod @Params -Verbose:$false
+            $Response = ($Request).data
             
             $Data = [PSCustomObject]@{
                 Token        = $Response.Token
@@ -69,13 +70,10 @@ function Get-OPBearerToken {
                 Write-Error $_
             }
         } # end If
-        else {
-            Write-Verbose 'Token exists and is still valid. Continuing..'
-        }
     }
 
     end {
-        $Token = Get-Variable -Name 'OPToken' -Scope Global -ErrorAction SilentlyContinue
+        $Token = Get-Variable -Name 'OPToken' -Scope 'Global' -ErrorAction SilentlyContinue
         return $Token.Value
     }
 

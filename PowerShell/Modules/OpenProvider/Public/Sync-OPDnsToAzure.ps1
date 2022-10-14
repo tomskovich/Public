@@ -46,13 +46,13 @@ function Sync-OPDnsToAzure {
         try {
             foreach ($Module in $Modules) {
                 if ( ! ( Get-Module $Module ) ) {
-                    if ( Get-Module -ListAvailable -Name $Module ) {
-                        Write-Host "Loading module: $Module..." -ForegroundColor 'Yellow'
-                        Import-Module $Module
+                    if ( Get-Module -ListAvailable -Name $Module -Verbose:$false ) {
+                        Write-Verbose "Loading module: $Module..."
+                        Import-Module $Module -Verbose:$false
                     }
                     else {
-                        Write-Host "Module $Module not installed! Installing module..." -ForegroundColor 'Yellow'
-                        Install-Module $Module
+                        Write-Warning "Module $Module not installed! Installing module..."
+                        Install-Module $Module -Verbose:$false
                     }
                 }
             }
@@ -64,7 +64,7 @@ function Sync-OPDnsToAzure {
 
         # Check for Az context
         if ( ! (Get-AzContext)) {
-            Write-Host 'Seems there is no connection to Azure. Please login to your Azure account' -ForegroundColor 'Red'
+            Write-Output 'Seems there is no connection to Azure. Please login to your Azure account'
             try {
                 Connect-AzAccount
             }
@@ -74,22 +74,22 @@ function Sync-OPDnsToAzure {
             }
         }
         else {
-            Write-Host 'Connected to Azure. Continuing...' -ForegroundColor 'Green'
+            Write-Verbose 'Connected to Azure. Continuing...'
         }
-        
+
         # Check for Az Resource Group permissions
         if ( ! (Get-AzResourceGroup -Name $ResourceGroupName)) {
             throw "Cannot access resource group $ResourceGroupName. Please check your permissions, or change to the correct context with Get-AzSubscription and Set-AzContext."
         }
         else {
-            Write-Host "Account has permissions for Resource Group $ResourceGroupName. Continuing..." -ForegroundColor 'Green'
+            Write-Verbose "Account has permissions for Resource Group $ResourceGroupName. Continuing..."
         }
     } # end Begin
 
     process {
         foreach ($Domain in $Domains) {
             # Get domain info from OpenProvider; prompt user for confirmation
-            Write-host "Getting OpenProvider NameServer group for $($Domain)" -ForegroundColor 'Yellow'
+            Write-Information "Getting OpenProvider NameServer group for $($Domain)"
             try {
                 if ($Search) {
                     $OPDomainInfo = Get-OPDomain -Domain $Domain -Search
@@ -98,7 +98,7 @@ function Sync-OPDnsToAzure {
                     $OPDomainInfo = Get-OPDomain -Domain $Domain
                 }
                 if ( ! ($Force.IsPresent)) {
-                    Write-Host '=== Received the following domain information from OpenProvider. Please verify if this domain is correct.' -ForegroundColor 'Cyan'
+                    Write-Output '=== Received the following domain information from OpenProvider. Please verify if this domain is correct.'
                     $OPDomainInfo
                     Pause
                 }
@@ -109,7 +109,7 @@ function Sync-OPDnsToAzure {
             }
 
             # Get DNS zone from OpenProvider
-            Write-host "Getting OpenProvider DNS zone for $($Domain)" -ForegroundColor 'Yellow'
+            Write-Information "Getting OpenProvider DNS zone for $($Domain)"
             try {
                 $OPDnsZone = Get-OPDnsZone -Domain $Domain | Where-Object -Property RecordType -ne 'NS'
             }
@@ -119,11 +119,11 @@ function Sync-OPDnsToAzure {
             }
 
             # Get DNS zone from Azure and create if needed
-            Write-host "Getting Azure DNS zone for $($Domain)" -ForegroundColor 'Yellow'
+            Write-Information "Getting Azure DNS zone for $($Domain)"
             Get-AzDnsZone -Name $Domain -ResourceGroupName $ResourceGroupName -ErrorVariable NotFound -ErrorAction 'SilentlyContinue' | Out-Null
-            if ($NotFound) { 
+            if ($NotFound) {
                 Write-Warning "DNS Zone not found in Azure."
-                Write-Host 'Creating new DNS zone...' -ForegroundColor 'Green'
+                Write-Information 'Creating new DNS zone...' -ForegroundColor 'Green'
                 try {
                     New-AzDnsZone -Name $Domain -ResourceGroupName $ResourceGroupName | Out-Null
                 }
@@ -133,7 +133,7 @@ function Sync-OPDnsToAzure {
             }
 
             # A-Records
-            Write-Host 'Processing A-Records...' -ForegroundColor 'Yellow'
+            Write-Information 'Processing A-Records...'
             $ARecords = $OPDnsZone | Where-Object 'RecordType' -eq 'A'
             if ($null -ne $ARecords) {
                 $ARecords | ForEach-Object {
@@ -144,7 +144,7 @@ function Sync-OPDnsToAzure {
                         Write-Warning "Record Set $($_.Name) does not exist." -ErrorAction 'SilentlyContinue'
                     }
                     if ($NotFound) {
-                        Write-Host "Creating A-Record Set: $($_.Name)" -ForegroundColor 'Green'
+                        Write-Output "Creating A-Record Set: $($_.Name)"
                         $AParams = @{
                             ResourceGroupName = 'DNS'
                             ZoneName          = $_.Domain
@@ -159,7 +159,7 @@ function Sync-OPDnsToAzure {
                         Write-Verbose "Record set AND value already exist."
                     }
                     else {
-                        Write-Host 'Record Set already exists. Updating record set with additional value...' -ForegroundColor 'Yellow'
+                        Write-Information 'A-Record Set already exists. Updating record set with additional value...'
                         Add-AzDnsRecordConfig -RecordSet $AzARecordSet -Ipv4Address $_.Value
                         Set-AzDnsRecordSet -RecordSet $AzARecordSet
                     }
@@ -170,7 +170,7 @@ function Sync-OPDnsToAzure {
             }
 
             # AAAA-Records
-            Write-Host 'Processing AAAA-Records...' -ForegroundColor 'Yellow'
+            Write-Information 'Processing AAAA-Records...'
             $AaaaRecords = $OPDnsZone | Where-Object 'RecordType' -eq 'AAAA'
             if ($null -ne $AaaaRecords) {
                 $AaaaRecords | ForEach-Object {
@@ -181,7 +181,7 @@ function Sync-OPDnsToAzure {
                         Write-Warning "Record Set $($_.Name) does not exist." -ErrorAction 'SilentlyContinue'
                     }
                     if ($Notfound) {
-                        Write-Host "Creating AAAA-Record Set: $($_.Name)" -ForegroundColor 'Green'
+                        Write-Output "Creating AAAA-Record Set: $($_.Name)"
                         $AaaaParams = @{
                             ResourceGroupName = 'DNS'
                             ZoneName          = $_.Domain
@@ -196,18 +196,18 @@ function Sync-OPDnsToAzure {
                         Write-Verbose "Record set AND value already exist."
                     }
                     else {
-                        Write-Host 'Record Set already exists. Updating record set with additional value...' -ForegroundColor 'Yellow'
+                        Write-Information 'AAAA-Record Set already exists. Updating record set with additional value...'
                         Add-AzDnsRecordConfig -RecordSet $AzAaaaRecordSet -Exchange $_.Value -Preference $_.Priority
                         Set-AzDnsRecordSet -RecordSet $AzAaaaRecordSet
                     }
                 } # end Foreach-Object 'AAAA' records
             }
             else {
-                Write-Host 'No AAAA-Records found. ' -ForegroundColor 'DarkGray'
+                Write-Verbose 'No AAAA-Records found. '
             }
 
             # CAA-Records
-            Write-Host 'Processing CAA-Records...' -ForegroundColor 'Yellow'
+            Write-Information 'Processing CAA-Records...'
             $CaaRecords = $OPDnsZone | Where-Object 'RecordType' -eq 'CAA'
             if ($null -ne $CaaRecords) {
                 $CaaRecords | ForEach-Object {
@@ -221,7 +221,7 @@ function Sync-OPDnsToAzure {
                         Write-Warning "Record Set $($_.Name) does not exist." -ErrorAction 'SilentlyContinue'
                     }
                     if ( ! ($AzCaaRecordSet)) {
-                        Write-Host "Creating SRV-Record Set: $($_.Name)" -ForegroundColor 'Green'
+                        Write-Output "Creating SRV-Record Set: $($_.Name)"
                         $CaaParams = @{
                             ResourceGroupName = 'DNS'
                             ZoneName          = $_.Domain
@@ -236,18 +236,18 @@ function Sync-OPDnsToAzure {
                         Write-Verbose "Record set AND value already exist."
                     }
                     else {
-                        Write-Host 'Record Set already exists. Updating record set with additional value...' -ForegroundColor 'Yellow'
+                        Write-Information 'CAA-Record Set already exists. Updating record set with additional value...'
                         Add-AzDnsRecordConfig -RecordSet $AzCaaRecordSet -CaaFlags $CaaFlags -CaaTag $CaaTag -CaaValue $CaaValue
                         Set-AzDnsRecordSet -RecordSet $AzCaaRecordSet
                     }
                 } # end Foreach-Object 'CAA' records
             }
             else {
-                Write-Host 'No CAA-records found. ' -ForegroundColor 'DarkGray'
+                Write-Verbose 'No CAA-records found. '
             }
 
             # CNAME-Records
-            Write-Host 'Processing CNAME-Records...' -ForegroundColor 'Yellow'
+            Write-Information 'Processing CNAME-Records...'
             $CnameRecords = $OPDnsZone | Where-Object 'RecordType' -eq 'CNAME'
             if ($null -ne $CnameRecords) {
                 $CnameRecords | ForEach-Object {
@@ -258,7 +258,7 @@ function Sync-OPDnsToAzure {
                         Write-Warning "Record Set $($_.Name) does not exist." -ErrorAction 'SilentlyContinue'
                     }
                     if ( ! ($AzCnameRecordSet)) {
-                        Write-Host "Creating CNAME-Record Set: $($_.Name)" -ForegroundColor 'Green'
+                        Write-Output "Creating CNAME-Record Set: $($_.Name)"
                         $CnameParams = @{
                             ResourceGroupName = 'DNS'
                             ZoneName          = $_.Domain
@@ -273,18 +273,18 @@ function Sync-OPDnsToAzure {
                         Write-Verbose "Record set AND value already exist."
                     }
                     else {
-                        Write-Host 'Record Set already exists. Updating record set with additional value...' -ForegroundColor 'Yellow'
+                        Write-Information 'Record Set already exists. Updating record set with additional value...'
                         Add-AzDnsRecordConfig -RecordSet $AzCnameRecordSet -Cname $_.Value
                         Set-AzDnsRecordSet -RecordSet $AzCnameRecordSet
                     }
                 } # end Foreach-Object 'CNAME' records
             }
             else {
-                Write-Host 'No CNAME-Records found. ' -ForegroundColor 'DarkGray'
+                Write-Verbose 'No CNAME-Records found.'
             }
 
             # MX-Records
-            Write-Host 'Processing MX-Records...' -ForegroundColor 'Yellow'
+            Write-Information 'Processing MX-Records...'
             $MxRecords = $OPDnsZone | Where-Object 'RecordType' -eq 'MX'
             if ($null -ne $MxRecords) {
                 $MxRecords | ForEach-Object {
@@ -295,7 +295,7 @@ function Sync-OPDnsToAzure {
                         Write-Warning "Record Set $($_.Name) does not exist." -ErrorAction 'SilentlyContinue'
                     }
                     if ( ! ($AzMxRecordSet)) {
-                        Write-Host "Creating MX-Record Set: $($_.Name)" -ForegroundColor 'Green'
+                        Write-Output "Creating MX-Record Set: $($_.Name)"
                         $MxParams = @{
                             ResourceGroupName = 'DNS'
                             ZoneName          = $_.Domain
@@ -310,18 +310,18 @@ function Sync-OPDnsToAzure {
                         Write-Verbose "Record set AND value already exist."
                     }
                     else {
-                        Write-Host "Record Set already exists. Updating record set with additional value... $($_.Value)" -ForegroundColor 'Yellow'
+                        Write-Information "Record Set already exists. Updating record set with additional value... $($_.Value)"
                         Add-AzDnsRecordConfig -RecordSet $AzMxRecordSet -Exchange $_.Value -Preference $_.Priority | Out-Null
                         Set-AzDnsRecordSet -RecordSet $AzMxRecordSet | Out-Null
                     }
                 } # end Foreach-Object 'MX' records
             }
             else {
-                Write-Host 'No MX-Records found. ' -ForegroundColor 'DarkGray'
+                Write-Verbose 'No MX-Records found.'
             }
 
             # SRV Records
-            Write-Host 'Processing SRV-Records...' -ForegroundColor 'Yellow'
+            Write-Information 'Processing SRV-Records...'
             $SrvRecords = $OPDnsZone | Where-Object 'RecordType' -eq 'SRV'
             if ($null -ne $SrvRecords) {
                 $SrvRecords | ForEach-Object {
@@ -335,7 +335,7 @@ function Sync-OPDnsToAzure {
                         Write-Warning "Record Set $($_.Name) does not exist." -ErrorAction 'SilentlyContinue'
                     }
                     if ( ! ($AzSrvRecordSet)) {
-                        Write-Host "Creating SRV-Record Set: $($_.Name)" -ForegroundColor 'Green'
+                        Write-Output "Creating SRV-Record Set: $($_.Name)"
                         $SrvParams = @{
                             ResourceGroupName = 'DNS'
                             ZoneName          = $_.Domain
@@ -350,18 +350,18 @@ function Sync-OPDnsToAzure {
                         Write-Verbose "Record set AND value already exist."
                     }
                     else {
-                        Write-Host 'Record Set already exists. Updating record set with additional value...' -ForegroundColor 'Yellow'
+                        Write-Information 'Record Set already exists. Updating record set with additional value...'
                         Add-AzDnsRecordConfig -RecordSet $AzSrvRecordSet -Priority $_.Priority -Weight $Weight -Port $Port -Target $Target | Out-Null
                         Set-AzDnsRecordSet -RecordSet $AzSrvRecordSet | Out-Null
                     }
                 } # end Foreach-Object 'SRV' records
             }
             else {
-                Write-Host 'No SRV-Records found. ' -ForegroundColor 'DarkGray'
+                Write-Verbose 'No SRV-Records found.'
             }
 
             # TXT-Records
-            Write-Host 'Processing TXT-Records...' -ForegroundColor 'Yellow'
+            Write-Information 'Processing TXT-Records...'
             $TxtRecords = $OPDnsZone | Where-Object 'RecordType' -eq 'TXT'
             if ($null -ne $TxtRecords) {
                 $TxtRecords | ForEach-Object {
@@ -373,7 +373,7 @@ function Sync-OPDnsToAzure {
                         Write-Warning "Record Set $($_.Name) does not exist." -ErrorAction 'SilentlyContinue'
                     }
                     if ( ! ($AzTxtRecordSet)) {
-                        Write-Host "Creating TXT-Record Set: $($_.Name)" -ForegroundColor 'Green'
+                        Write-Output "Creating TXT-Record Set: $($_.Name)"
                         $TxtParams = @{
                             ResourceGroupName = 'DNS'
                             ZoneName          = $_.Domain
@@ -388,15 +388,17 @@ function Sync-OPDnsToAzure {
                         Write-Verbose "Record set AND value already exist."
                     }
                     else {
-                        Write-Host "Record Set already exists. Updating record set with additional value... $($Value)" -ForegroundColor 'Yellow'
+                        Write-Information "TXT Record Set $($_.Name) already exists. Updating record set with additional value... $($Value)"
                         Add-AzDnsRecordConfig -RecordSet $AzTxtRecordSet -Value $Value  | Out-Null
                         Set-AzDnsRecordSet -RecordSet $AzTxtRecordSet  | Out-Null
                     }
                 } # end Foreach-Object 'TXT' records
             }
             else {
-                Write-Host 'No TXT-Records found.' -ForegroundColor 'DarkGray'
+                Write-Verbose 'No TXT-Records found.'
             }
+
+            Write-Output "FINISHED Syncing DNS zone to Azure for domain: $Domain"
         }
     } # end Process
 
