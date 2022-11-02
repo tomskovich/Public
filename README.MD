@@ -11,8 +11,6 @@ More information will be posted on my [blog](https://tech-tom.com).
     - [Scripts](https://github.com/tomskovich/Public#powershellscripts)
     - [Functions](https://github.com/tomskovich/Public#powershellfunctions)
         - [New-Password](https://github.com/tomskovich/Public/blob/main/PowerShell/Functions/New-Password.ps1)
-    - [Modules](https://github.com/tomskovich/Public/tree/main/PowerShell/Modules)
-        - [OpenProvider](https://github.com/tomskovich/Public/tree/main/PowerShell/Modules/OpenProvider)
 
 - [Python](https://github.com/tomskovich/Public#python)
     - [Scripts](https://github.com/tomskovich/Public#pythonscripts)
@@ -28,15 +26,3 @@ More information will be posted on my [blog](https://tech-tom.com).
 
 - [New-Password](https://github.com/tomskovich/Public/tree/main/PowerShell/blob/main/Functions/New-Password.ps1) 
     - Generates one or more "random" human-readable passwords, with some options for complexity and language. See [blog post](https://tech-tom.com/posts/powershell-password-generator/) for more information.
-
-## Scripts
-
-- [Placeholder]
-
-# PYTHON
-
-## Scripts
-
-- [Placeholder]
-
-
